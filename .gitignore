@@ -1,1 +1,9 @@
 venv/
+.idea/inspectionProfiles/profiles_settings.xml
+.idea/inspectionProfiles/Project_Default.xml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workout.iml
+backend/__pycache__/app.cpython-313.pyc
+.idea/workspace.xml
