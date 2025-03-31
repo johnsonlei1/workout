@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { Client, Databases } from "appwrite";
+import { Client, Databases, ID } from "appwrite";
 
 const client = new Client();
 client
@@ -8,12 +8,19 @@ client
   .setProject("67e9d1c10001b5c3836e");
 
 const databases = new Databases(client);
-const DATABASE_ID = "your_database_id"; // Replace with your actual database ID
-const COLLECTION_ID = "your_collection_id"; // Replace with your actual collection ID
+const DATABASE_ID = "67e9d7e00002b31a049d"; // Replace with your actual database ID
+const COLLECTION_ID = "67e9d95e001c3e26c317"; // Replace with your actual collection ID
+
+const promise = databases.createDocument(
+  DATABASE_ID,
+  COLLECTION_ID,
+  ID.unique(),
+  { name: "chest" }
+);
 
 function App() {
   const [data, setData] = useState(null);
-  const [exercise, setExercise] = useState("");
+  const [name, setName] = useState("");
   const [sets, setSets] = useState("");
   const [reps, setReps] = useState("");
   const [date, setDate] = useState("");
@@ -28,19 +35,19 @@ function App() {
     e.preventDefault();
     try {
       await databases.createDocument(DATABASE_ID, COLLECTION_ID, "unique()", {
-        exercise,
+        name,
         sets: parseInt(sets),
         reps: parseInt(reps),
         date,
       });
-      alert("Exercise logged successfully!");
-      setExercise("");
+      alert("name logged successfully!");
+      setName("");
       setSets("");
       setReps("");
       setDate("");
     } catch (error) {
-      console.error("Error logging exercise:", error);
-      alert("Failed to log exercise.");
+      console.error("Error logging name:", error);
+      alert("Failed to log name.");
     }
   };
 
@@ -53,9 +60,9 @@ function App() {
       <form onSubmit={handleSubmit}>
         <input
           type="text"
-          placeholder="Exercise Name"
-          value={exercise}
-          onChange={(e) => setExercise(e.target.value)}
+          placeholder="name Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           required
         />
         <input
@@ -78,7 +85,7 @@ function App() {
           onChange={(e) => setDate(e.target.value)}
           required
         />
-        <button type="submit">Log Exercise</button>
+        <button type="submit">Log name</button>
       </form>
     </div>
   );
