@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { Databases, Client, Models } from "appwrite";
+import {
+  Databases,
+  Client,
+  Models,
+  ID,
+  Account,
+  Permission,
+  Role,
+} from "appwrite";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../services/auth";
 import "./Dashboard.css";
@@ -13,6 +21,18 @@ client
 const databases = new Databases(client);
 const DATABASE_ID = "67e9d7e00002b31a049d";
 const COLLECTION_ID = "67e9d95e001c3e26c317";
+
+const account = new Account(client);
+
+const getCurrentUser = async () => {
+  try {
+    const user = await account.get(); // Get logged-in user info
+    return user.$id; // Return the user ID
+  } catch (error) {
+    console.error("User not authenticated:", error);
+    return null; // Return null if the user is not logged in
+  }
+};
 
 // Extending Appwrite's Document type with our custom fields
 interface Workout extends Models.Document {
@@ -35,14 +55,19 @@ const Dashboard = () => {
   const [formData, setFormData] = useState<FormData>({
     name: "",
     reps: "",
-    sets: ""
+    sets: "",
   });
-  
+
   const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch the data from the database
     const fetchWorkouts = async () => {
+      const userId = await getCurrentUser();
+      if (!userId) {
+        console.error("User not authenticated");
+        return; // Stop the process if user is not authenticated
+      }
       try {
         const response = await databases.listDocuments(
           DATABASE_ID,
@@ -61,7 +86,7 @@ const Dashboard = () => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
   };
 
@@ -70,18 +95,27 @@ const Dashboard = () => {
     if (!formData.name || !formData.reps || !formData.sets) {
       return;
     }
+    const userId = await getCurrentUser(); // Get the logged-in user
+    if (!userId) {
+      console.error("User not authenticated");
+      return; // Stop the process if user is not authenticated
+    }
 
     try {
       const response = await databases.createDocument(
         DATABASE_ID,
         COLLECTION_ID,
-        "unique()",
-        { 
-          name: formData.name, 
-          reps: parseInt(formData.reps), 
+        ID.unique(),
+        {
+          name: formData.name,
+          reps: parseInt(formData.reps),
           sets: parseInt(formData.sets),
-          date: new Date().toISOString() 
-        }
+          date: new Date().toISOString(),
+        },
+        [
+          Permission.read(Role.user(userId)), // Allow the user to read the document
+          Permission.write(Role.user(userId)), // Allow the user to write (modify) the document
+        ]
       );
       setWorkouts([...workouts, response as unknown as Workout]);
       setFormData({ name: "", reps: "", sets: "" });
@@ -108,21 +142,21 @@ const Dashboard = () => {
   // Group workouts by date
   const groupWorkoutsByDate = () => {
     const grouped: { [date: string]: Workout[] } = {};
-    
+
     // Sort workouts by date (most recent first)
-    const sortedWorkouts = [...workouts].sort((a, b) => 
-      new Date(b.date).getTime() - new Date(a.date).getTime()
+    const sortedWorkouts = [...workouts].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
     );
-    
+
     // Group by date
-    sortedWorkouts.forEach(workout => {
+    sortedWorkouts.forEach((workout) => {
       const dateStr = new Date(workout.date).toLocaleDateString();
       if (!grouped[dateStr]) {
         grouped[dateStr] = [];
       }
       grouped[dateStr].push(workout);
     });
-    
+
     return grouped;
   };
 
@@ -136,9 +170,9 @@ const Dashboard = () => {
           Logout
         </button>
       </header>
-      
+
       {error && <div className="error-message">{error}</div>}
-      
+
       <section className="workouts-section">
         <h2>Your Workouts</h2>
         {workouts.length === 0 ? (
@@ -166,8 +200,8 @@ const Dashboard = () => {
                         <td>{workout.reps}</td>
                         <td>{workout.sets}</td>
                         <td>
-                          <button 
-                            className="delete-button" 
+                          <button
+                            className="delete-button"
                             onClick={() => handleDeleteWorkout(workout.$id)}
                           >
                             Delete
@@ -183,10 +217,7 @@ const Dashboard = () => {
         )}
       </section>
 
-      <button 
-        className="add-button" 
-        onClick={() => setShowAddForm(true)}
-      >
+      <button className="add-button" onClick={() => setShowAddForm(true)}>
         Add New Exercise
       </button>
 
@@ -197,9 +228,7 @@ const Dashboard = () => {
             <h3>Add New Exercise</h3>
             <form onSubmit={handleAddWorkout}>
               <div className="form-group">
-                <label>
-                  Exercise Name:
-                </label>
+                <label>Exercise Name:</label>
                 <input
                   type="text"
                   name="name"
@@ -208,11 +237,9 @@ const Dashboard = () => {
                   required
                 />
               </div>
-              
+
               <div className="form-group">
-                <label>
-                  Number of Reps:
-                </label>
+                <label>Number of Reps:</label>
                 <input
                   type="number"
                   name="reps"
@@ -222,11 +249,9 @@ const Dashboard = () => {
                   required
                 />
               </div>
-              
+
               <div className="form-group">
-                <label>
-                  Number of Sets:
-                </label>
+                <label>Number of Sets:</label>
                 <input
                   type="number"
                   name="sets"
@@ -236,7 +261,7 @@ const Dashboard = () => {
                   required
                 />
               </div>
-              
+
               <div className="form-actions">
                 <button
                   type="button"
@@ -245,10 +270,7 @@ const Dashboard = () => {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="save-button"
-                >
+                <button type="submit" className="save-button">
                   Save
                 </button>
               </div>

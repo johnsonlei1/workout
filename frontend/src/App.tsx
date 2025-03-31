@@ -17,13 +17,13 @@ client
   .setProject("67e9d1c10001b5c3836e"); // Use your actual Appwrite project ID
 
 function App() {
-  const [data, setData] = useState(null);
+  /*const [data, setData] = useState(null);
 
   useEffect(() => {
     fetch("http://127.0.0.1:5000/api/data")
       .then((response) => response.json())
       .then((data) => setData(data.message));
-  }, []);
+  }, []);*/
 
   return (
     <Router>
