@@ -30,6 +30,7 @@ const Login = () => {
           onChange={(e) => setEmail(e.target.value)}
           required
         />
+        <span style={{ paddingLeft: "8px" }}></span>
         <input
           type="password"
           placeholder="Password"
@@ -38,7 +39,8 @@ const Login = () => {
           required
         />
         {error && <div style={{ color: "red" }}>{error}</div>}
-        <button type="submit">Login</button>
+        <span style={{ paddingLeft: "8px" }}></span>
+        <button style={{ fontSize: "12px", padding: "4px 8px"}} type="submit">Login</button>
       </form>
       <p>
         Don't have an account? <a href="/signup">Sign Up</a>
