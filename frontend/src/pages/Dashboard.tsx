@@ -16,6 +16,7 @@ const COLLECTION_ID = "67e9d95e001c3e26c317"; // Replace with your actual collec
 const Dashboard = () => {
   const [workouts, setWorkouts] = useState<any[]>([]); // Store the list of workouts
   const [error, setError] = useState<string | null>(null); // For error handling
+  const [newWorkout, setNewWorkout] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -36,6 +37,31 @@ const Dashboard = () => {
     fetchWorkouts();
   }, []);
 
+  const handleAddWorkout = async () => {
+    if (!newWorkout) return;
+    try {
+      const response = await databases.createDocument(
+        DATABASE_ID,
+        COLLECTION_ID,
+        "unique()",
+        { name: newWorkout, date: new Date().toISOString() }
+      );
+      setWorkouts([...workouts, response]);
+      setNewWorkout("");
+    } catch (error) {
+      console.error("Error adding workout:", error);
+    }
+  };
+
+  const handleDeleteWorkout = async (id: string) => {
+    try {
+      await databases.deleteDocument(DATABASE_ID, COLLECTION_ID, id);
+      setWorkouts(workouts.filter((workout) => workout.$id !== id));
+    } catch (error) {
+      console.error("Error deleting workout:", error);
+    }
+  };
+
   const handleLogout = () => {
     logout();
     navigate("/login"); // Redirect to login after logout
@@ -45,26 +71,34 @@ const Dashboard = () => {
     <div>
       <header className="header">
         <h1 className="title">Dashboard</h1>
+        <button style={{ fontSize: "12px", padding: "4px 8px", position: "absolute", top: "20px", right: "50px" , backgroundColor: "darkgreen" }} onClick={handleLogout}>Logout</button>
       </header>
 
       {error && <div style={{ color: "red" }}>{error}</div>}
 
       <section>
-        <h2>Workouts</h2>
-        {workouts.length === 0 ? (
+        <h2>Your Workouts</h2>
+        {workouts.length === 0 ? ( // No workouts found
           <p>No workouts logged yet.</p>
         ) : (
           <ul>
             {workouts.map((workout) => (
               <li key={workout.$id}>
-                <strong>{workout.name}</strong> | Date: {new Date(workout.date).toLocaleDateString()}
+                <strong>{workout.name}</strong>: {workout.reps} by {workout.sets}  (Date: {new Date(workout.date).toLocaleDateString()})
+                <button style={{ fontSize: "12px", padding: "4px 8px" }} onClick={() => handleDeleteWorkout(workout.$id)}>Delete</button>
               </li>
             ))}
           </ul>
         )}
       </section>
 
-      <button onClick={handleLogout}>Logout</button>
+      <input
+        type="text"
+        placeholder="Workout Name"
+        value={newWorkout}
+        onChange={(e) => setNewWorkout(e.target.value)}
+      />
+      <button style={{ fontSize: "12px", padding: "4px 8px" }} onClick={handleAddWorkout}>Add Workout</button>
     </div>
   );
 };

@@ -12,7 +12,7 @@ const Login = () => {
     e.preventDefault();
     try {
       await login(email, password);
-      navigate("/Dashboard"); // Redirect to App.tsx (root route)
+      navigate("/Dashboard"); // Redirect to Dashboard.tsx
     } catch (err: any) {
       console.error(err); // Log the error in the console for debugging
       setError(err.message || "Invalid credentials or network error");
