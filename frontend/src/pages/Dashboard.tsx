@@ -3,7 +3,7 @@ import { Databases, Client } from "appwrite";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../services/auth";
 
-// Initialize the Appwrite client
+//Initialize the Appwrite client
 const client = new Client();
 client
   .setEndpoint("https://cloud.appwrite.io/v1") // Replace with your Appwrite endpoint
@@ -50,15 +50,14 @@ const Dashboard = () => {
       {error && <div style={{ color: "red" }}>{error}</div>}
 
       <section>
-        <h2>Your Workouts</h2>
+        <h2>Workouts</h2>
         {workouts.length === 0 ? (
           <p>No workouts logged yet.</p>
         ) : (
           <ul>
             {workouts.map((workout) => (
               <li key={workout.$id}>
-                <strong>{workout.name}</strong> | Sets: {workout.sets} | Reps:{" "}
-                {workout.reps} | Date: {workout.date}
+                <strong>{workout.name}</strong> | Date: {new Date(workout.date).toLocaleDateString()}
               </li>
             ))}
           </ul>
