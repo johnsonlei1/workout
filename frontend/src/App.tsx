@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+//import { useEffect, useState } from "react";
 import "./App.css";
 import { Client } from "appwrite";
 import {
@@ -10,6 +10,8 @@ import {
 import Login from "./pages/Login"; // Import Login Component
 import Signup from "./pages/Signup"; // Import Signup Component
 import Dashboard from "./pages/Dashboard"; // Import Dashboard Component
+import Navbar from "./components/Navbar";
+import Community from "./pages/Community";
 
 const client = new Client();
 client
@@ -28,10 +30,9 @@ function App() {
   return (
     <Router>
       <div>
-        <header className="header">
-          <h1 className="title">Workout Logger</h1>
-        </header>
+        <Navbar />
         <Routes>
+
           {/* Route to Login Page */}
           <Route path="/login" element={<Login />} />
 
@@ -40,6 +41,9 @@ function App() {
 
           {/* Route to Dashboard Page */}
           <Route path="/dashboard" element={<Dashboard />} />
+
+          {/* Route to Community Page */}
+          <Route path="/community" element={<Community />}/>
 
           {/* Default route - redirects to login */}
           <Route path="/" element={<Navigate to="/login" />} />

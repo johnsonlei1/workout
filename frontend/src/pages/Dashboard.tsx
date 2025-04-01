@@ -9,7 +9,7 @@ import {
   Role,
 } from "appwrite";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../services/auth";
+import { logout } from "../components/auth";
 import "./Dashboard.css";
 
 // Initialize the Appwrite client
@@ -164,13 +164,6 @@ const Dashboard = () => {
 
   return (
     <div className="dashboard-container">
-      <header className="header">
-        <h1 className="title">Dashboard</h1>
-        <button className="logout-button" onClick={handleLogout}>
-          Logout
-        </button>
-      </header>
-
       {error && <div className="error-message">{error}</div>}
 
       <section className="workouts-section">
