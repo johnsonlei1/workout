@@ -47,20 +47,38 @@
   margin: 0;
   padding: 0;
   color: white;
+  display: inline-block;
 }
 
 .header {
-  flex: 1;
+  display: flex;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  background-color: #2f36b2; /* Adjust color as needed */
+  background-color: #2f36b2;
   color: white;
+  padding: 10px 20px;
+}
 
+.title-with-links {
+  display: flex;
+  align-items: center;
 }
 
 .link {
-  flex: 1;
   color: white;
+  text-decoration: none;
+  margin-right: 15px;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 4px;
+  /* background-color: rgba(255, 255, 255, 0.1); */
+  transition: background-color 0.2s;
+}
+
+.nav-links {
+  display: flex;
+  margin-left: 15px;
+  align-items: center;
 }
