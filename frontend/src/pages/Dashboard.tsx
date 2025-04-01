@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { logout } from "../components/auth";
 import "./Dashboard.css";
+import Navbar from "../components/Navbar";
 
 // Initialize the Appwrite client
 const client = new Client();
@@ -163,114 +164,117 @@ const Dashboard = () => {
   const groupedWorkouts = groupWorkoutsByDate();
 
   return (
-    <div className="dashboard-container">
-      {error && <div className="error-message">{error}</div>}
+    <div>
+      <Navbar />
+      <div className="dashboard-container">
+        {error && <div className="error-message">{error}</div>}
 
-      <section className="workouts-section">
-        <h2>Your Workouts</h2>
-        {workouts.length === 0 ? (
-          <p>No workouts logged yet.</p>
-        ) : (
-          <div className="workouts-container">
-            {Object.entries(groupedWorkouts).map(([date, dateWorkouts]) => (
-              <div key={date} className="date-group">
-                <h3 className="date-header">{date}</h3>
-                <table className="workouts-table">
-                  <thead>
-                    <tr>
-                      <th>Exercise</th>
-                      <th>Reps</th>
-                      <th>Sets</th>
-                      <th>Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {dateWorkouts.map((workout) => (
-                      <tr key={workout.$id}>
-                        <td>
-                          <strong>{workout.name}</strong>
-                        </td>
-                        <td>{workout.reps}</td>
-                        <td>{workout.sets}</td>
-                        <td>
-                          <button
-                            className="delete-button"
-                            onClick={() => handleDeleteWorkout(workout.$id)}
-                          >
-                            Delete
-                          </button>
-                        </td>
+        <section className="workouts-section">
+          <h2>Your Workouts</h2>
+          {workouts.length === 0 ? (
+            <p>No workouts logged yet.</p>
+          ) : (
+            <div className="workouts-container">
+              {Object.entries(groupedWorkouts).map(([date, dateWorkouts]) => (
+                <div key={date} className="date-group">
+                  <h3 className="date-header">{date}</h3>
+                  <table className="workouts-table">
+                    <thead>
+                      <tr>
+                        <th>Exercise</th>
+                        <th>Reps</th>
+                        <th>Sets</th>
+                        <th>Actions</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ))}
+                    </thead>
+                    <tbody>
+                      {dateWorkouts.map((workout) => (
+                        <tr key={workout.$id}>
+                          <td>
+                            <strong>{workout.name}</strong>
+                          </td>
+                          <td>{workout.reps}</td>
+                          <td>{workout.sets}</td>
+                          <td>
+                            <button
+                              className="delete-button"
+                              onClick={() => handleDeleteWorkout(workout.$id)}
+                            >
+                              Delete
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+
+        <button className="add-button" onClick={() => setShowAddForm(true)}>
+          Add New Exercise
+        </button>
+
+        {/* Modal Popup for Adding Exercise */}
+        {showAddForm && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              <h3>Add New Exercise</h3>
+              <form onSubmit={handleAddWorkout}>
+                <div className="form-group">
+                  <label>Exercise Name:</label>
+                  <input
+                    type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Number of Reps:</label>
+                  <input
+                    type="number"
+                    name="reps"
+                    value={formData.reps}
+                    onChange={handleInputChange}
+                    min="1"
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Number of Sets:</label>
+                  <input
+                    type="number"
+                    name="sets"
+                    value={formData.sets}
+                    onChange={handleInputChange}
+                    min="1"
+                    required
+                  />
+                </div>
+
+                <div className="form-actions">
+                  <button
+                    type="button"
+                    className="cancel-button"
+                    onClick={() => setShowAddForm(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button type="submit" className="save-button">
+                    Save
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
-      </section>
-
-      <button className="add-button" onClick={() => setShowAddForm(true)}>
-        Add New Exercise
-      </button>
-
-      {/* Modal Popup for Adding Exercise */}
-      {showAddForm && (
-        <div className="modal-overlay">
-          <div className="modal-content">
-            <h3>Add New Exercise</h3>
-            <form onSubmit={handleAddWorkout}>
-              <div className="form-group">
-                <label>Exercise Name:</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Number of Reps:</label>
-                <input
-                  type="number"
-                  name="reps"
-                  value={formData.reps}
-                  onChange={handleInputChange}
-                  min="1"
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Number of Sets:</label>
-                <input
-                  type="number"
-                  name="sets"
-                  value={formData.sets}
-                  onChange={handleInputChange}
-                  min="1"
-                  required
-                />
-              </div>
-
-              <div className="form-actions">
-                <button
-                  type="button"
-                  className="cancel-button"
-                  onClick={() => setShowAddForm(false)}
-                >
-                  Cancel
-                </button>
-                <button type="submit" className="save-button">
-                  Save
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };
