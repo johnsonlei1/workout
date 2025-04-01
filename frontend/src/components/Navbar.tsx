@@ -8,8 +8,12 @@ const Navbar = () => {
         <div className="title-with-links">
           <header className="title">Workout Logger</header>
           <div className="nav-links">
-            <Link to="/Community" className="link">To Community</Link>
-            <Link to="/Dashboard" className="link">To Dashboard</Link>
+            <Link to="/Community" className="link">
+              Community
+            </Link>
+            <Link to="/Dashboard" className="link">
+              Dashboard
+            </Link>
           </div>
         </div>
       </div>
