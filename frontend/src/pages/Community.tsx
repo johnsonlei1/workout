@@ -5,7 +5,7 @@ const Community = () => {
   return (
     <div>
       <Navbar />
-      <h1>Title</h1>
+      <h1>Community Leaderboards</h1>
     </div>
   );
 };
